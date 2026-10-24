@@ -403,39 +403,3 @@ setPrompt();write('CMD_14 Command Processor [Version 1.0.0]','good');write('(c) 
 </script>
 </body>
 </html>
-+n));if((value.startsWith('\"')&&value.endsWith('\"'))||(value.startsWith("'")&&value.endsWith("'")))value=value.slice(1,-1);write(value);return;}
- if(/^new-item\s+/.test(raw)||/^mkdir\s+/.test(low)){const m=raw.match(/(?:-path\s+)?(?:-itemtype\s+\w+\s+)?(.+)$/i);const arg=(m?.[1]||'').trim().replace(/^['\"]|['\"]$/g,'');if(!arg){err('New-Item: 경로를 입력하세요.');return;}const p=norm(arg);const e=addNode(p,makeNode('dir'));if(e)err(e);else write('    Directory: C:'+parent(p)+'\n\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----\nd----          '+stamp()+'             '+base(p),'good');return;}
- if(/^remove-item\s+/.test(raw)){const arg=raw.replace(/^remove-item\s+/i,'').trim().replace(/^['\"]|['\"]$/g,'');const p=resolveExisting(arg);if(!p||p==='\\'){err('Remove-Item: 항목을 찾을 수 없습니다.');return;}removeTree(p);saveFS();write('항목을 제거했습니다: '+('C:'+p),'good');return;}
- if(raw.startsWith('
-
-$('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';run(v);setPrompt();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
-$('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
-$$('[data-cmd]').forEach(b=>b.onclick=()=>{showView('terminal');run(b.dataset.cmd);$('#cmdInput').focus();});
-$$('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
-$('#newFolder').onclick=()=>newNameDialog('dir');$('#newFile').onclick=()=>newNameDialog('file');$('#refreshFiles').onclick=renderExplorer;
-$('#upDir').onclick=()=>{currentPath=parent(currentPath)||'\\';setPrompt();renderExplorer();};
-
-$('#clearHistory').onclick=()=>{if(confirm('명령 기록을 지울까요?')){history=[];histIndex=0;saveHistory();renderHistory();toast('명령 기록을 지웠습니다.');}};
-setPrompt();write('CMD_14 Command Processor [Version 1.0.0]','good');write('(c) CMD_14 Project. All rights reserved.','dim');write('');write('명령어 목록은 help 를 입력하세요.');write('');renderExplorer();renderHistory();
-})();
-</script>
-</body>
-</html>
-)&&/^\$[a-z_][\w]*$/i.test(raw)){const name=raw.slice(1).toLowerCase();write(s.vars[name]??'');return;}
- if(/^exit$/i.test(raw)){write('PowerShell 탭은 상단 × 버튼으로 닫을 수 있습니다.','dim');return;}
- err('가상 PowerShell: 지원하지 않는 명령입니다. Get-Command 로 명령 목록을 확인하세요.');
-}
-
-$('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';run(v);setPrompt();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
-$('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
-$$('[data-cmd]').forEach(b=>b.onclick=()=>{showView('terminal');run(b.dataset.cmd);$('#cmdInput').focus();});
-$$('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
-$('#newFolder').onclick=()=>newNameDialog('dir');$('#newFile').onclick=()=>newNameDialog('file');$('#refreshFiles').onclick=renderExplorer;
-$('#upDir').onclick=()=>{currentPath=parent(currentPath)||'\\';setPrompt();renderExplorer();};
-
-$('#clearHistory').onclick=()=>{if(confirm('명령 기록을 지울까요?')){history=[];histIndex=0;saveHistory();renderHistory();toast('명령 기록을 지웠습니다.');}};
-setPrompt();write('CMD_14 Command Processor [Version 1.0.0]','good');write('(c) CMD_14 Project. All rights reserved.','dim');write('');write('명령어 목록은 help 를 입력하세요.');write('');renderExplorer();renderHistory();
-})();
-</script>
-</body>
-</html>
