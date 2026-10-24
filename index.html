@@ -207,7 +207,7 @@ function removeTree(p){for(const k of Object.keys(fs))if(k===p||k.startsWith(p+'
 function listDir(p){return Object.keys(fs).filter(k=>k!=='\\'&&isChild(k,p)).sort((a,b)=>{const A=fs[a],B=fs[b];return (A.type===B.type?0:A.type==='dir'?-1:1)||base(a).localeCompare(base(b));});}
 function parseArgs(s){const out=[];let cur='',quote=null,started=false;for(let i=0;i<s.length;i++){const c=s[i];if(quote){if(c===quote){quote=null;}else if(c==='^'&&i+1<s.length)cur+=s[++i];else cur+=c;started=true;}else if(c==='"'||c==="'"){quote=c;started=true;}else if(/\s/.test(c)){if(started){out.push(cur);cur='';started=false;}}else if(c==='^'&&i+1<s.length){cur+=s[++i];started=true;}else{cur+=c;started=true;}}if(quote)throw new Error('따옴표가 닫히지 않았습니다.');if(started)out.push(cur);return out;}
 function splitCommand(raw){let quote=null;for(let i=0;i<raw.length;i++){if(raw[i]==='"'||raw[i]==="'"){if(!quote)quote=raw[i];else if(quote===raw[i])quote=null;}else if(raw[i]==='&'&&!quote){if(raw[i+1]==='&')return [raw.slice(0,i).trim(),raw.slice(i+2).trim()];return [raw.slice(0,i).trim(),raw.slice(i+1).trim()];}}return [raw.trim(),null];}
-const commandNames=['help','/?','ver','cls','echo','title','color','prompt','dir','cd','chdir','tree','type','copy','xcopy','move','ren','rename','del','erase','mkdir','md','rmdir','rd','find','where','path','pushd','popd','systeminfo','hostname','whoami','date','time','vol','label','explorer','notepad','calc','history','doskey','set','exit','shutdown','format','sfc','ipconfig','ping','assoc','fc','more','attrib','ver','about','resetfs'];
+const commandNames=['sui','help','/?','ver','cls','echo','title','color','prompt','dir','cd','chdir','tree','type','copy','xcopy','move','ren','rename','del','erase','mkdir','md','rmdir','rd','find','where','path','pushd','popd','systeminfo','hostname','whoami','date','time','vol','label','explorer','notepad','calc','history','doskey','set','exit','shutdown','format','sfc','ipconfig','ping','assoc','fc','more','attrib','ver','about','resetfs'];
 let dirStack=[];
 function run(raw, fromHistory=false){
  raw=raw.trim();if(!raw)return;
@@ -385,6 +385,7 @@ function runPowerShell(raw){
    removeTree(p);saveFS();success('항목을 제거했습니다: C:'+p);return;
  }
  if(/^\$[a-z_][\w]*$/i.test(raw)){write(s.vars[raw.slice(1).toLowerCase()]??'');return;}
+ if(/^sui$/i.test(raw)){write('');success('S U I I I I I I I I I I I !!!');write('      >_  CMD_14 — SUI MODE');write('');return;}
  if(/^exit$/i.test(raw)){write('탭의 × 버튼으로 이 가상 세션을 닫을 수 있습니다.','dim');return;}
  err('가상 PowerShell: 지원하지 않는 명령입니다. Get-Command 로 명령 목록을 확인하세요.');
 }
