@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CMD_14 Web</title>
+<style>
+:root{--bg:#202020;--panel:#252526;--panel2:#2d2d30;--line:#414141;--text:#f1f1f1;--muted:#b8b8b8;--accent:#f0f0f0;--accent2:#7edc9a;--danger:#ff6b6b;--yellow:#ffd166;--mono:Consolas,"Cascadia Mono","Courier New",monospace}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px "Segoe UI",Arial,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer;color:var(--text);background:#292929;border:1px solid #505050;border-radius:5px;padding:8px 11px}button:hover{border-color:#bdbdbd;background:#353535}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #e5e5e5;outline-offset:2px}
+.app{height:100%;display:flex;flex-direction:column;min-height:480px}.topbar{height:44px;display:flex;align-items:center;gap:12px;padding:0 18px;background:#202328;border-bottom:1px solid var(--line);flex-shrink:0}.brandmark{width:28px;height:28px;border:1px solid var(--accent);border-radius:3px;display:grid;place-items:center;color:var(--accent);font:700 13px var(--mono)}.brand{font-weight:700;letter-spacing:.5px;color:#f1f1f1}.brand small{display:block;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:1.7px;margin-top:2px}.topgrow{flex:1}.status{color:var(--accent);font-size:12px}.layout{display:grid;grid-template-columns:210px 1fr;min-height:0;flex:1}.sidebar{background:#1d2025;border-right:1px solid var(--line);padding:15px 10px;display:flex;flex-direction:column;gap:5px}.navlabel{font-size:10px;color:#a0a0a0;letter-spacing:1.5px;padding:13px 10px 5px}.navbtn{width:100%;text-align:left;background:transparent;border-color:transparent;padding:10px 11px;display:flex;align-items:center;gap:10px}.navbtn.active{background:#333333;border-color:#626262;color:#ffffff}.navbtn span:first-child{width:20px;text-align:center;color:var(--accent)}.sidebottom{margin-top:auto;padding:10px;color:var(--muted);font-size:11px;line-height:1.6}.main{display:flex;flex-direction:column;min-width:0;min-height:0;padding:8px;gap:8px}.headrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pagetitle{font-size:18px;font-weight:650}.subtitle{font-size:12px;color:var(--muted);margin-top:4px}.headgrow{flex:1}.pill{font-size:11px;color:var(--accent);border:1px solid #28514c;background:#102b29;border-radius:6px;padding:5px 9px}.terminal{background:#0c0c0c;border:1px solid #555;border-radius:2px;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:230px;box-shadow:none}.termhead{height:39px;background:#252a30;border-bottom:1px solid #383d45;display:flex;align-items:center;padding:0 12px;gap:8px;font-size:12px;color:#dddddd}.dot{width:8px;height:8px;border-radius:50%;background:#777777}.termhead .termname{margin-left:5px;flex:1}.termhead button{padding:4px 8px;font-size:11px}.output{padding:17px 17px 8px;overflow:auto;flex:1;font:13px/1.65 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}.line{min-height:1.4em}.line.error{color:var(--danger)}.line.warn{color:var(--yellow)}.line.good{color:var(--accent2)}.line.dim{color:#a0a0a0}.line.command{color:#f1f1f1}.inputrow{display:flex;align-items:center;gap:0;padding:0 17px 16px;border:0;background:transparent;font-family:var(--mono)}.prompt{color:#f1f1f1;white-space:nowrap}.cmdinput{background:transparent;border:0;outline:0;color:#fff;min-width:0;flex:1;font:13px var(--mono)}.cmdinput::placeholder{color:#777777}.bottomrow{display:flex;gap:8px;flex-wrap:wrap}.hint{font-size:11px;color:var(--muted);margin-left:auto;align-self:center}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px;min-height:0;overflow:auto}.hidden{display:none!important}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}.statcard{background:#242424;border:1px solid var(--line);border-radius:7px;padding:13px}.statlabel{color:var(--muted);font-size:11px}.statvalue{font-size:22px;font-weight:650;margin-top:8px}.statnote{color:var(--accent);font-size:11px;margin-top:4px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.pathbox{background:#181818;border:1px solid var(--line);border-radius:5px;padding:9px 11px;color:var(--accent2);font:12px var(--mono);flex:1;min-width:150px}.filelist{width:100%;border-collapse:collapse;font-size:12px}.filelist th{text-align:left;color:var(--muted);font-weight:500;background:#303030}.filelist th,.filelist td{padding:10px 9px;border-bottom:1px solid #444444}.filelist tr[data-path]{cursor:pointer}.filelist tr[data-path]:hover{background:#303030}.filelist .fname{color:#e8f1f7}.filelist .folder{color:var(--accent2)}.muted{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:25px}.toolgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.toolcard{background:#242424;border:1px solid var(--line);border-radius:7px;padding:14px}.toolcard h3{margin:0 0 8px;font-size:14px}.toolcard p{color:var(--muted);font-size:12px;line-height:1.5}.toolcard button{margin-top:5px}.progress{height:6px;border-radius:5px;background:#3a3a3a;overflow:hidden;margin:8px 0}.progress span{display:block;height:100%;background:var(--accent);width:42%}.modalback{position:fixed;inset:0;background:#0009;display:grid;place-items:center;padding:18px;z-index:5}.modal{width:min(620px,100%);max-height:90vh;overflow:auto;background:#242424;border:1px solid #555555;border-radius:9px;box-shadow:0 12px 36px #0008}.modalhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}.modalhead strong{flex:1}.modalbody{padding:16px}.modalfoot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}.field label{font-size:12px;color:var(--muted)}.field input,.field textarea{background:#111111;color:var(--text);border:1px solid #505050;border-radius:5px;padding:10px}.field textarea{min-height:190px;resize:vertical;font:13px/1.5 var(--mono)}.toast{position:fixed;right:18px;bottom:18px;background:#252525;border:1px solid #4b4b4b;padding:11px 14px;border-radius:8px;z-index:10;box-shadow:0 8px 30px #0006}.footerline{font-size:10px;color:#627789;text-align:right;padding-top:2px}
+@media(max-width:720px){.layout{grid-template-columns:58px 1fr}.sidebar{padding:10px 5px}.navbtn{justify-content:center;padding:11px 5px}.navbtn .navtext,.navlabel,.sidebottom{display:none}.main{padding:10px}.topbar{padding:0 10px}.hint{display:none}.status{display:none}.output{font-size:12px;padding:12px}}
+
+/* CMD_14: keep the original dark theme; only reduce the overly-modern styling */
+button{
+  background:#2b2b2b;
+  border:1px solid #858585;
+  border-radius:2px;
+  box-shadow:none;
+}
+button:hover{background:#383838;border-color:#d0d0d0}
+button:active{background:#222;border-color:#aaa}
+button:focus-visible,input:focus-visible,textarea:focus-visible{
+  outline:1px dotted #eee;
+  outline-offset:1px;
+}
+.topbar{background:#202328;border-bottom:1px solid #555}
+.brandmark{border-radius:1px}
+.navbtn{border-radius:2px}
+.navbtn.active{background:#383838;border-color:#888}
+.pill{border-radius:2px;background:#303030;border-color:#777;color:#eee}
+.terminal{border-radius:2px;box-shadow:none}
+.termhead{background:#292929;border-bottom:1px solid #555}
+.panel,.statcard,.toolcard{border-radius:2px;box-shadow:none}
+.modal{border-radius:2px;box-shadow:0 4px 12px #0006}
+.field input,.field textarea,.pathbox{border-radius:2px}
+.toast{border-radius:2px;box-shadow:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="layout">
+    <aside class="sidebar">
+      <button class="navbtn active" data-view="terminal"><span>›_</span><span class="navtext">터미널</span></button>
+      <button class="navbtn" data-view="explorer"><span>▣</span><span class="navtext">파일 탐색기</span></button>
+      <button class="navbtn" data-view="history"><span>↶</span><span class="navtext">명령 기록</span></button>
+    </aside>
+    <main class="main">
+      <section id="view-terminal" class="view" style="display:flex;flex-direction:column;flex:1;min-height:0;gap:12px">
+        <div class="terminal">
+          <div id="output" class="output" role="log" aria-live="polite"></div>
+          <div class="inputrow"><input id="cmdInput" class="cmdinput" autocomplete="off" spellcheck="false" placeholder="" aria-label="터미널에 명령어 입력"></div>
+        </div>
+        <div class="bottomrow"><button data-cmd="help">help</button><button data-cmd="dir">dir</button><button data-cmd="tree">tree</button><button data-cmd="cls">cls</button></div>
+      </section>
+      <section id="view-explorer" class="view hidden">
+        <div class="headrow"><div><div class="pagetitle">파일 탐색기</div><div class="subtitle">가상 C: 드라이브의 파일과 폴더를 관리합니다.</div></div><div class="headgrow"></div><button id="newFolder">+ 새 폴더</button><button id="newFile">+ 새 파일</button></div>
+        <div class="toolbar"><button id="upDir">↑ 위로</button><div id="explorerPath" class="pathbox">C:\</div><button id="refreshFiles">새로 고침</button></div>
+        <div class="panel"><table class="filelist"><thead><tr><th>이름</th><th>유형</th><th>크기</th><th>수정</th><th>작업</th></tr></thead><tbody id="fileRows"></tbody></table><div id="fileEmpty" class="empty hidden">이 폴더는 비어 있습니다.</div></div>
+        <div class="footerline">더블 클릭: 폴더 열기 / 파일 편집</div>
+      </section>
+      <section id="view-history" class="view hidden">
+        <div class="headrow"><div><div class="pagetitle">명령 기록</div><div class="subtitle">최근 실행한 명령어를 다시 실행하거나 복사할 수 있습니다.</div></div><div class="headgrow"></div><button id="clearHistory">기록 지우기</button></div>
+        <div class="panel" style="margin-top:14px"><div id="historyRows"></div></div>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="modalHost"></div><div id="toastHost"></div>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const terminalEl = document.querySelector('.terminal');
+terminalEl.addEventListener('click', e => { if (!e.target.closest('button') && !window.getSelection()?.toString()) document.querySelector('#cmdInput').focus(); });
+const $$ = s => [...document.querySelectorAll(s)];
+const STORAGE_KEY = 'cmd14.virtualfs.v1';
+const HISTORY_KEY = 'cmd14.commandhistory.v1';
+const COLORS = { '0':'#070b10','1':'#183b70','2':'#176b3a','3':'#247c7a','4':'#7b2c2c','5':'#713b79','6':'#a56a28','7':'#dce7ef','8':'#607282','9':'#75aaff','a':'#55d6c2','b':'#72d5df','c':'#ff7777','d':'#e2a4ff','e':'#f0ca75','f':'#ffffff' };
+const stamp = () => new Date().toLocaleString();
+const norm = p => {
+  p = String(p ?? '').replace(/\//g,'\\').trim();
+  if (!p) return currentPath;
+  if (/^[a-z]:/i.test(p)) p = p.slice(2);
+  let parts = p.startsWith('\\') ? [] : currentPath.split('\\').filter(Boolean);
+  for (const bit of p.split('\\')) {
+    if (!bit || bit === '.') continue;
+    if (bit === '..') parts.pop(); else parts.push(bit);
+  }
+  return '\\' + parts.join('\\');
+};
+const parent = p => p === '\\' ? null : p.slice(0,p.lastIndexOf('\\')) || '\\';
+const base = p => p === '\\' ? 'C:\\' : p.split('\\').pop();
+const winpath = p => 'C:' + (p === '\\' ? '\\' : p);
+const isChild = (p, dir) => parent(p) === dir;
+const makeNode = (type, content='') => ({type, content, created:stamp(), modified:stamp()});
+function initialFS(){
+ const fs = {'\\':makeNode('dir'),'\\Users':makeNode('dir'),'\\Users\\User':makeNode('dir'),'\\Users\\User\\Desktop':makeNode('dir'),'\\Users\\User\\Documents':makeNode('dir'),'\\Users\\User\\Downloads':makeNode('dir'),'\\Windows':makeNode('dir'),'\\Windows\\System32':makeNode('dir'),'\\Program Files':makeNode('dir'),'\\README.txt':makeNode('file','CMD_14 Web 가상 파일 시스템에 오신 것을 환영합니다.\\n\\n이 드라이브는 브라우저 안에서만 동작합니다. 실제 Windows 파일은 변경하지 않습니다.\\nhelp 명령어로 사용 가능한 명령을 확인하세요.\\n'),'\\Users\\User\\Documents\\notes.txt':makeNode('file','메모 파일입니다.\\n여기 내용을 수정해 보세요.\\n'),'\\Windows\\System32\\cmd14.exe':makeNode('file','[virtual executable] CMD_14 command processor\\n')};
+ return fs;
+}
+let fs;
+try { const saved=localStorage.getItem(STORAGE_KEY); fs=saved?JSON.parse(saved):initialFS(); if(!fs['\\']||fs['\\'].type!=='dir') fs=initialFS(); } catch { fs=initialFS(); }
+let currentPath='\\Users\\User';
+let history=[]; try {history=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');if(!Array.isArray(history))history=[];}catch{history=[]}
+let histIndex=history.length, outputLines=0, activeView='terminal', titleText='CMD_14';
+function saveFS(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(fs));}catch{write('경고: 저장 공간이 부족해 파일 시스템을 저장하지 못했습니다.','warn');}}
+function saveHistory(){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history.slice(-200)));}catch{}}
+function write(text='', cls=''){const out=$('#output');const div=document.createElement('div');div.className='line '+cls;div.textContent=String(text);out.appendChild(div);outputLines++;if(outputLines>2500){while(out.children.length>1800)out.removeChild(out.firstChild);outputLines=out.children.length;}out.scrollTop=out.scrollHeight;}
+function clearOutput(){ $('#output').textContent='';outputLines=0; }
+function setPrompt(){ /* 프롬프트 UI를 표시하지 않음 */ }
+function promptLine(cmd){write(cmd,'command');}
+function err(msg){write(msg,'error');}
+function success(msg){write(msg,'good');}
+function getNode(p){return fs[p]||null;}
+function resolveExisting(p){const q=norm(p);return fs[q]?q:null;}
+function ensureParent(p){const par=parent(p);return !!par&&fs[par]?.type==='dir';}
+function addNode(p,node){if(fs[p])return '이미 같은 이름의 파일 또는 폴더가 있습니다.';if(!ensureParent(p))return '경로를 찾을 수 없습니다.';fs[p]=node;saveFS();return null;}
+function removeTree(p){for(const k of Object.keys(fs))if(k===p||k.startsWith(p+'\\'))delete fs[k];}
+function listDir(p){return Object.keys(fs).filter(k=>k!=='\\'&&isChild(k,p)).sort((a,b)=>{const A=fs[a],B=fs[b];return (A.type===B.type?0:A.type==='dir'?-1:1)||base(a).localeCompare(base(b));});}
+function parseArgs(s){const out=[];let cur='',quote=null,started=false;for(let i=0;i<s.length;i++){const c=s[i];if(quote){if(c===quote){quote=null;}else if(c==='^'&&i+1<s.length)cur+=s[++i];else cur+=c;started=true;}else if(c==='"'||c==="'"){quote=c;started=true;}else if(/\s/.test(c)){if(started){out.push(cur);cur='';started=false;}}else if(c==='^'&&i+1<s.length){cur+=s[++i];started=true;}else{cur+=c;started=true;}}if(quote)throw new Error('따옴표가 닫히지 않았습니다.');if(started)out.push(cur);return out;}
+function splitCommand(raw){let quote=null;for(let i=0;i<raw.length;i++){if(raw[i]==='"'||raw[i]==="'"){if(!quote)quote=raw[i];else if(quote===raw[i])quote=null;}else if(raw[i]==='&'&&!quote){if(raw[i+1]==='&')return [raw.slice(0,i).trim(),raw.slice(i+2).trim()];return [raw.slice(0,i).trim(),raw.slice(i+1).trim()];}}return [raw.trim(),null];}
+const commandNames=['help','/?','ver','cls','echo','title','color','prompt','dir','cd','chdir','tree','type','copy','xcopy','move','ren','rename','del','erase','mkdir','md','rmdir','rd','find','where','path','pushd','popd','systeminfo','hostname','whoami','date','time','vol','label','explorer','notepad','calc','history','doskey','set','exit','shutdown','format','sfc','ipconfig','ping','assoc','fc','more','attrib','ver','about','resetfs'];
+let dirStack=[];
+function run(raw, fromHistory=false){
+ raw=raw.trim();if(!raw)return;
+ if(!fromHistory){history.push(raw);history=history.slice(-200);saveHistory();histIndex=history.length;}
+ promptLine(raw);
+ try{const [first,rest]=splitCommand(raw);executeSingle(first);if(rest)runChained(rest);}catch(e){err('오류: '+(e.message||'명령을 실행할 수 없습니다.'));}
+ renderHistory();
+}
+function runChained(raw){if(!raw)return;const [first,rest]=splitCommand(raw);try{executeSingle(first);if(rest)runChained(rest);}catch(e){err('오류: '+e.message);}}
+function executeSingle(raw){
+ if(!raw)return;
+ const space=raw.search(/\s/);const cmd=(space<0?raw:raw.slice(0,space)).toLowerCase();const argstr=space<0?'':raw.slice(space).trim();
+ let a;try{a=parseArgs(argstr);}catch(e){err(e.message);return;}
+ const usage=(s)=>err('사용법: '+s);
+ switch(cmd){
+ case 'help':case '/?':
+  write('CMD_14 Web [Version 14.0.1]','good');write('이 환경은 웹 브라우저 안에서 동작하는 가상 명령 프롬프트입니다.');write('');
+  write('파일 및 폴더');write('  dir, cd, tree, type, copy, move, ren, del, mkdir, rmdir, find, where');write('시스템 명령');write('  ver, systeminfo, hostname, whoami, date, time, vol, explorer');write('셸 및 화면');write('  cls, echo, title, color, prompt, history, doskey, set, exit');write('추가');write('  notepad [파일], calc, ipconfig, ping, path, pushd, popd, about');write('');write('명령어는 대소문자를 구분하지 않습니다. 경로에 공백이 있으면 "큰따옴표"로 감싸세요.');write('여러 명령은 & 또는 && 로 연결할 수 있습니다.');break;
+ case 'ver':write('CMD_14 Web [Version 14.0.1.26024]');break;
+ case 'about':write('CMD_14 Web — 독립형 브라우저 가상 셸. 실제 Windows CMD가 아니며 OS 명령을 실행하지 않습니다.');break;
+ case 'cls':clearOutput();break;
+ case 'echo':if(!argstr){write('ECHO is on.');}else if(/^off$/i.test(argstr))write('ECHO is off.');else if(/^on$/i.test(argstr))write('ECHO is on.');else write(argstr.replace(/^["']|["']$/g,''));break;
+ case 'title':if(!argstr){write('현재 제목: '+titleText);}else{titleText=argstr;document.title=titleText+' — CMD_14 Web';success('창 제목을 "'+titleText+'"(으)로 설정했습니다.');}break;
+ case 'color':if(!a.length){write('현재 색상 코드: '+(document.documentElement.dataset.color||'0a'));write('사용법: color [전경색][배경색] (0-f)');break;}const code=a[0].toLowerCase();if(!/^[0-9a-f]{1,2}$/.test(code)){err('잘못된 색상 지정입니다. 0-f 범위의 16진수 코드를 사용하세요.');break;}const fg=COLORS[code[0]],bg=COLORS[code[1]||'0'];document.documentElement.dataset.color=code;$('#output').style.color=fg;$('#output').style.background=bg;$('.terminal').style.background=bg;$('.cmdinput').style.color=fg;success('가상 터미널 색상을 변경했습니다.');break;
+ case 'prompt':if(!argstr)write('현재 프롬프트: $P$G');else write('이 시뮬레이터에서는 프롬프트 사용자 지정이 표시용으로만 지원됩니다.');break;
+ case 'dir':{
+  const target=a.filter(x=>!x.startsWith('/'))[0];const p=target?resolveExisting(target):currentPath;if(!p){err('파일을 찾을 수 없습니다.');break;}if(fs[p].type==='file'){write(' '+base(p)+'  '+fs[p].content.length+' bytes');break;}
+  const entries=listDir(p);write(' C 드라이브의 디렉터리: '+winpath(p));write('');write('           <DIR>          .');write('           <DIR>          ..');let files=0,dirs=0,bytes=0;for(const k of entries){const n=fs[k],isdir=n.type==='dir';if(isdir)dirs++;else{files++;bytes+=n.content.length;}write(`${n.modified.padEnd(22)} ${isdir?'<DIR>'.padStart(12):String(n.content.length).padStart(12)}  ${base(k)}`,isdir?'good':'');}write(`        ${files}개 파일  ${bytes} 바이트`);write(`        ${dirs}개 디렉터리`);break;}
+ case 'cd':case 'chdir':if(!a.length){write(winpath(currentPath));break;}if(a[0]==='\\'||/^c:\\?$/i.test(a[0])){currentPath='\\';break;}const cd=resolveExisting(a[0]);if(!cd||fs[cd].type!=='dir'){err('지정된 경로를 찾을 수 없습니다.');break;}currentPath=cd;setPrompt();break;
+ case 'md':case 'mkdir':if(!a.length){usage('mkdir 디렉터리');break;}for(const name of a){const p=norm(name);if(p==='\\'){err('지정된 경로는 만들 수 없습니다.');continue;}const e=addNode(p,makeNode('dir'));if(e)err(e);else success('디렉터리를 만들었습니다: '+winpath(p));}break;
+ case 'rd':case 'rmdir':if(!a.length){usage('rmdir [/s] [/q] 디렉터리');break;} {const recursive=a.some(x=>/^\/s$/i.test(x));const quiet=a.some(x=>/^\/q$/i.test(x));const target=a.find(x=>!x.startsWith('/'));if(!target){usage('rmdir [/s] 디렉터리');break;}const p=resolveExisting(target);if(!p||fs[p].type!=='dir'||p==='\\'){err('디렉터리를 찾을 수 없거나 삭제할 수 없습니다.');break;}const kids=Object.keys(fs).filter(k=>k.startsWith(p+'\\'));if(kids.length&&!recursive){err('디렉터리가 비어 있지 않습니다. /s 옵션을 사용하세요.');break;}removeTree(p);saveFS();if(currentPath===p||currentPath.startsWith(p+'\\')){currentPath=parent(p)||'\\';setPrompt();}if(!quiet)success('디렉터리를 삭제했습니다: '+winpath(p));}break;
+ case 'type':if(!a.length){usage('type 파일');break;}for(const f of a){const p=resolveExisting(f);if(!p||fs[p].type!=='file'){err('파일을 찾을 수 없습니다: '+f);continue;}write(fs[p].content.replace(/\n$/,''));}break;
+ case 'del':case 'erase':if(!a.length){usage('del [/q] 파일');break;} {const quiet=a.some(x=>/^\/q$/i.test(x));const names=a.filter(x=>!x.startsWith('/'));if(!names.length){usage('del 파일');break;}for(const name of names){const p=resolveExisting(name);if(!p||fs[p].type!=='file'){err('파일을 찾을 수 없습니다: '+name);continue;}delete fs[p];saveFS();if(!quiet)success('삭제했습니다: '+winpath(p));}}break;
+ case 'copy':case 'xcopy':if(a.length<2){usage('copy 원본 대상');break;} {const src=resolveExisting(a[0]);if(!src||fs[src].type!=='file'){err('원본 파일을 찾을 수 없습니다.');break;}let dest=norm(a[1]);if(fs[dest]?.type==='dir')dest=dest+'\\'+base(src);if(dest===src){err('원본과 대상이 같습니다.');break;}const e=addNode(dest,makeNode('file',fs[src].content));if(e)err(e);else success('        1개 파일을 복사했습니다.');}break;
+ case 'move':if(a.length<2){usage('move 원본 대상');break;} {const src=resolveExisting(a[0]);if(!src||src==='\\'){err('원본을 찾을 수 없습니다.');break;}let dest=norm(a[1]);if(fs[dest]?.type==='dir')dest+='\\'+base(src);if(fs[dest]){err('대상에 같은 이름이 이미 있습니다.');break;}if(!ensureParent(dest)){err('대상 경로를 찾을 수 없습니다.');break;}if(fs[src].type==='dir'&&dest.startsWith(src+'\\')){err('디렉터리를 자기 하위로 이동할 수 없습니다.');break;}const moving=Object.keys(fs).filter(k=>k===src||k.startsWith(src+'\\'));for(const k of moving.sort((x,y)=>x.length-y.length)){const nk=dest+k.slice(src.length);fs[nk]=fs[k];delete fs[k];}saveFS();success('        이동했습니다.');}break;
+ case 'ren':case 'rename':if(a.length!==2){usage('ren 기존이름 새이름');break;} {const src=resolveExisting(a[0]);if(!src||src==='\\'){err('파일 또는 디렉터리를 찾을 수 없습니다.');break;}const dest=parent(src)+'\\'+a[1].replace(/[\\/]/g,'');if(fs[dest]){err('대상 이름이 이미 존재합니다.');break;}const moving=Object.keys(fs).filter(k=>k===src||k.startsWith(src+'\\'));for(const k of moving.sort((x,y)=>x.length-y.length)){const nk=dest+k.slice(src.length);fs[nk]=fs[k];delete fs[k];}saveFS();success('이름을 변경했습니다.');}break;
+ case 'tree':{const target=a.find(x=>!x.startsWith('/'));const p=target?resolveExisting(target):currentPath;if(!p||fs[p].type!=='dir'){err('경로를 찾을 수 없습니다.');break;}write(winpath(p));let count=0;function walk(dir,prefix,depth){if(depth>20)return;const kids=listDir(dir);kids.forEach((k,i)=>{const last=i===kids.length-1;write(prefix+(last?'└── ':'├── ')+base(k),fs[k].type==='dir'?'good':'');count++;if(fs[k].type==='dir')walk(k,prefix+(last?'    ':'│   '),depth+1);});}walk(p,'',0);write('총 '+count+'개 항목');}break;
+ case 'find':if(a.length<2){usage('find "문자열" 파일');break;} {const needle=a[0].replace(/^["']|["']$/g,'').toLowerCase();for(const name of a.slice(1)){const p=resolveExisting(name);if(!p||fs[p].type!=='file'){err('파일을 찾을 수 없습니다: '+name);continue;}const lines=fs[p].content.split(/\r?\n/);let hits=0;lines.forEach((line,i)=>{if(line.toLowerCase().includes(needle)){write('---------- '+winpath(p));write(String(i+1).padStart(5)+': '+line);hits++;}});if(!hits)write('일치하는 문자열을 찾을 수 없습니다: '+name,'dim');}}break;
+ case 'where':if(!a.length){usage('where 파일이름');break;} {let found=0;for(const p of Object.keys(fs)){if(base(p).toLowerCase()===a[0].toLowerCase()){write(winpath(p));found++;}}if(!found)err('정보: 지정한 패턴과 일치하는 파일을 찾을 수 없습니다.');}break;
+ case 'vol':write('C 드라이브의 볼륨은 CMD14_VIRTUAL입니다.');write('볼륨 일련 번호: 14C0-14DE');break;
+ case 'label':write('이 가상 드라이브의 레이블은 CMD14_VIRTUAL입니다.');break;
+ case 'hostname':write('CMD14-WEB');break;
+ case 'whoami':write('cmd14-web\\user');break;
+ case 'date':write('현재 날짜: '+new Date().toLocaleDateString());break;
+ case 'time':write('현재 시간: '+new Date().toLocaleTimeString());break;
+ case 'systeminfo':write('호스트 이름: CMD14-WEB');write('OS 이름: CMD_14 Web Virtual Environment');write('OS 버전: 14.0.1.26024');write('시스템 제조업체: Browser Runtime');write('시스템 모델: Virtual Web Machine');write('시스템 종류: Browser-based');write('프로세서: 가상 프로세서 (측정값 아님)');write('메모리: 브라우저가 제공하는 실제 메모리 총량을 표시하지 않음');write('부팅 시간: 이 페이지 세션 시작');write('가상 드라이브: C: ('+Object.keys(fs).length+'개 항목)');break;
+ case 'ipconfig':write('Windows IP 구성 [시뮬레이션]');write('이더넷 어댑터 Virtual Network:');write('   연결별 DNS 접미사 . . . . : cmd14.local');write('   IPv4 주소 . . . . . . . . : 192.0.2.14 (문서용 테스트 주소)');write('   서브넷 마스크 . . . . . . : 255.255.255.0');write('   기본 게이트웨이 . . . . . : 192.0.2.1');write('참고: 실제 네트워크 설정을 읽은 값이 아닙니다.');break;
+ case 'ping':if(!a.length){usage('ping 호스트');break;}write('CMD_14 가상 Ping: '+a[0]);write('요청을 시뮬레이션했습니다. 실제 네트워크 패킷은 전송하지 않습니다.');write('패킷: 보냄 = 4, 받음 = 4, 손실 = 0 (가상 결과)');break;
+ case 'path':write('가상 PATH = C:\\Windows\\System32;C:\\Program Files\\CMD14');break;
+ 
+ 
+ case 'explorer':showView('explorer');renderExplorer();break;
+ case 'notepad':openNotepad(a[0]||null);break;
+ case 'calc':openCalc();break;
+ case 'history':if(!history.length)write('명령 기록이 비어 있습니다.');else history.slice(-50).forEach((h,i)=>write(String(Math.max(1,history.length-50)+i).padStart(3)+'  '+h));break;
+ case 'doskey':write('DOSKEY 매크로는 지원하지 않습니다. 위/아래 방향키로 명령 기록을 탐색할 수 있습니다.');break;
+ case 'set':write('COMSPEC=C:\\Windows\\System32\\cmd14.exe');write('OS=CMD_14 Web Virtual Environment');write('USERDOMAIN=CMD14-WEB');write('USERNAME=User');write('VIRTUAL_DRIVE=C:');break;
+ case 'pushd':if(!a.length){usage('pushd 경로');break;} {const p=resolveExisting(a[0]);if(!p||fs[p].type!=='dir'){err('경로를 찾을 수 없습니다.');break;}dirStack.push(currentPath);currentPath=p;setPrompt();}break;
+ case 'popd':if(!dirStack.length){err('디렉터리 스택이 비어 있습니다.');break;}currentPath=dirStack.pop();setPrompt();break;
+ case 'exit':write('CMD_14 세션을 종료하려면 이 탭을 닫으세요. 저장된 가상 파일은 유지됩니다.','dim');break;
+ case 'shutdown':write('이 시뮬레이터는 컴퓨터를 종료할 수 없습니다.','warn');break;
+ case 'format':case 'resetfs':if(!a.includes('/confirm')){err('안전을 위해 이 명령은 지원되지 않습니다. 파일 탐색기에서 항목을 관리하세요.');break;}err('전체 드라이브 초기화 명령은 비활성화되어 있습니다.');break;
+ case 'sfc':write('Windows 리소스 보호: 실제 Windows 파일을 검사하지 않습니다.');break;
+ case 'assoc':write('.txt=CMD14.TextFile');write('.log=CMD14.LogFile');break;
+ case 'attrib':write('가상 파일 특성 변경은 지원되지 않습니다.');break;
+ case 'fc':if(a.length<2){usage('fc 파일1 파일2');break;} {const p1=resolveExisting(a[0]),p2=resolveExisting(a[1]);if(!p1||!p2||fs[p1].type!=='file'||fs[p2].type!=='file'){err('비교할 파일을 찾을 수 없습니다.');break;}if(fs[p1].content===fs[p2].content)write('파일이 같습니다.');else write('파일이 서로 다릅니다.');}break;
+ case 'more':if(!a.length){usage('more 파일');break;} {const p=resolveExisting(a[0]);if(!p||fs[p].type!=='file'){err('파일을 찾을 수 없습니다.');break;}fs[p].content.split(/\r?\n/).forEach(write);}break;
+ case 'ipconfig':break;
+ default:err("'"+cmd+"'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는 배치 파일이 아닙니다.");
+ }
+}
+function showView(view){activeView=view;$$('.view').forEach(el=>el.classList.toggle('hidden',el.id!=='view-'+view));$$('.navbtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='explorer')renderExplorer();if(view==='history')renderHistory();}
+function renderExplorer(){
+ $('#explorerPath').textContent=winpath(currentPath);const tbody=$('#fileRows');tbody.textContent='';const entries=listDir(currentPath);$('#fileEmpty').classList.toggle('hidden',entries.length>0);
+ for(const p of entries){const n=fs[p],tr=document.createElement('tr');tr.dataset.path=p;const cells=[(n.type==='dir'?'▰ ':'▤ ')+base(p),n.type==='dir'?'파일 폴더':'텍스트 파일',n.type==='dir'?'—':n.content.length+' B',n.modified,''];
+ cells.forEach((val,i)=>{const td=document.createElement('td');if(i===0){td.className=n.type==='dir'?'fname folder':'fname';td.textContent=val;}else if(i===4){const edit=document.createElement('button');edit.textContent=n.type==='dir'?'열기':'편집';edit.style.padding='5px 8px';edit.onclick=e=>{e.stopPropagation();n.type==='dir'?(currentPath=p,setPrompt(),renderExplorer()):openNotepad(p);};td.append(edit);const del=document.createElement('button');del.textContent='삭제';del.style.padding='5px 8px';del.style.marginLeft='5px';del.onclick=e=>{e.stopPropagation();if(confirm('가상 항목을 삭제할까요? '+base(p))){removeTree(p);saveFS();renderExplorer();toast('가상 항목을 삭제했습니다.');}};td.append(del);}else td.textContent=val;tr.append(td);});
+ tr.ondblclick=()=>{if(n.type==='dir'){currentPath=p;setPrompt();renderExplorer();}else openNotepad(p);};tbody.append(tr);
+ }
+}
+function renderHistory(){const host=$('#historyRows');if(!host)return;host.textContent='';if(!history.length){host.innerHTML='<div class="empty">아직 실행한 명령어가 없습니다.</div>';return;}history.slice().reverse().forEach((h,idx)=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #444444';const code=document.createElement('code');code.style.cssText='font:12px var(--mono);flex:1;overflow-wrap:anywhere;color:#e7f3f7';code.textContent=h;const runb=document.createElement('button');runb.textContent='실행';runb.onclick=()=>{showView('terminal');$('#cmdInput').value=h;run(h);$('#cmdInput').value='';$('#cmdInput').focus();};const copy=document.createElement('button');copy.textContent='입력';copy.onclick=()=>{showView('terminal');$('#cmdInput').value=h;$('#cmdInput').focus();};row.append(code,runb,copy);host.append(row);});}
+function toast(msg){const host=$('#toastHost');host.textContent='';const d=document.createElement('div');d.className='toast';d.textContent=msg;host.append(d);setTimeout(()=>d.remove(),2400);}
+function modal(title,body,buttons){const host=$('#modalHost');host.textContent='';const back=document.createElement('div');back.className='modalback';const box=document.createElement('div');box.className='modal';const head=document.createElement('div');head.className='modalhead';const strong=document.createElement('strong');strong.textContent=title;const x=document.createElement('button');x.textContent='닫기';x.onclick=()=>host.textContent='';head.append(strong,x);const b=document.createElement('div');b.className='modalbody';b.append(body);const foot=document.createElement('div');foot.className='modalfoot';(buttons||[]).forEach(btn=>foot.append(btn));box.append(head,b,foot);back.append(box);back.addEventListener('click',e=>{if(e.target===back)host.textContent='';});host.append(back);return {host,body:b,box};}
+function field(label,value=''){const wrap=document.createElement('div');wrap.className='field';const l=document.createElement('label');l.textContent=label;const input=document.createElement('input');input.value=value;wrap.append(l,input);return {wrap,input};}
+function openNotepad(path){
+ let p=path, existing=p?fs[p]:null;if(p&&(!existing||existing.type!=='file')){toast('파일을 찾을 수 없습니다.');return;}
+ const name=field('파일 경로 (C: 기준)',p?winpath(p):winpath(currentPath)+'\\untitled.txt');const text=document.createElement('textarea');text.value=existing?existing.content:'';text.spellcheck=false;const body=document.createElement('div');body.append(name.wrap);const f=document.createElement('div');f.className='field';const lab=document.createElement('label');lab.textContent='내용';f.append(lab,text);body.append(f);
+ const save=document.createElement('button');save.textContent='저장';save.onclick=()=>{const target=norm(name.input.value);if(target==='\\'||!ensureParent(target)){toast('상위 폴더가 존재하지 않습니다.');return;}if(fs[target]&&fs[target].type==='dir'){toast('폴더에는 저장할 수 없습니다.');return;}if(!fs[target])fs[target]=makeNode('file',text.value);else{fs[target].content=text.value;fs[target].modified=stamp();}saveFS();host.textContent='';renderExplorer();toast('가상 파일을 저장했습니다.');};const cancel=document.createElement('button');cancel.textContent='취소';cancel.onclick=()=>host.textContent='';const {host}=modal('메모장 — 가상 텍스트 편집기',body,[cancel,save]);}
+function openCalc(){
+ const body=document.createElement('div');const f=field('수식 (숫자와 + - * / % 괄호만 허용)','(12 + 8) * 3');const result=document.createElement('div');result.style.cssText='padding:13px;background:#111111;border:1px solid #505050;border-radius:7px;font:20px var(--mono);color:var(--accent)';result.textContent='결과: —';const calc=document.createElement('button');calc.textContent='계산';calc.onclick=()=>{const s=f.input.value;if(!/^[0-9+\-*/%().\s]+$/.test(s)){result.textContent='허용되지 않는 문자';return;}try{const fn=Function('"use strict";return ('+s+')');const n=fn();result.textContent=Number.isFinite(n)?'결과: '+n:'유효하지 않은 결과';}catch{result.textContent='수식을 확인하세요.';}};body.append(f.wrap,result);const close=document.createElement('button');close.textContent='닫기';close.onclick=()=>host.textContent='';const {host}=modal('계산기',body,[close,calc]);calc.click();}
+function newNameDialog(kind){const f=field(kind==='dir'?'새 폴더 이름':'새 파일 이름',kind==='dir'?'새 폴더':'untitled.txt');const body=document.createElement('div');body.append(f.wrap);const cancel=document.createElement('button');cancel.textContent='취소';cancel.onclick=()=>host.textContent='';const create=document.createElement('button');create.textContent='만들기';create.onclick=()=>{const name=f.input.value.trim();if(!name||/[\\/:*?"<>|]/.test(name)||name==='.'||name==='..'){toast('파일 이름을 확인하세요.');return;}const p=norm(name);const e=addNode(p,kind==='dir'?makeNode('dir'):makeNode('file'));if(e){toast(e);return;}host.textContent='';renderExplorer();toast('생성했습니다.');if(kind==='file')openNotepad(p);};const {host}=modal(kind==='dir'?'새 폴더':'새 파일',body,[cancel,create]);f.input.focus();f.input.select();}
+function autoComplete(){const input=$('#cmdInput'),value=input.value;const m=value.match(/^(.*\s)([^\\/\s]*)$/);if(m){const prefix=m[1],partial=m[2].toLowerCase();const dirToken=prefix.trim().split(/\s+/).pop();let dir=currentPath;if(dirToken&&['cd','dir','type','del','copy','move','ren','mkdir','rmdir'].includes(dirToken.toLowerCase())){}const candidates=listDir(dir).map(p=>base(p)).filter(n=>n.toLowerCase().startsWith(partial));if(candidates.length){input.value=prefix+'"'+candidates[0]+'"';input.setSelectionRange(input.value.length,input.value.length);}}else{const candidates=commandNames.filter(c=>c.startsWith(value.toLowerCase()));if(candidates.length===1)input.value=candidates[0]+' ';else if(candidates.length>1){write(candidates.join('   '),'dim');}}}
+$('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';run(v);setPrompt();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
+$('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
+$$('[data-cmd]').forEach(b=>b.onclick=()=>{showView('terminal');run(b.dataset.cmd);$('#cmdInput').focus();});
+$$('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+$('#newFolder').onclick=()=>newNameDialog('dir');$('#newFile').onclick=()=>newNameDialog('file');$('#refreshFiles').onclick=renderExplorer;
+$('#upDir').onclick=()=>{currentPath=parent(currentPath)||'\\';setPrompt();renderExplorer();};
+
+$('#clearHistory').onclick=()=>{if(confirm('명령 기록을 지울까요?')){history=[];histIndex=0;saveHistory();renderHistory();toast('명령 기록을 지웠습니다.');}};
+setPrompt();write('CMD_14 Command Processor [Version 1.0.0]','good');write('(c) CMD_14 Project. All rights reserved.','dim');write('');write('명령어 목록은 help 를 입력하세요.');write('');renderExplorer();renderHistory();
+})();
+</script>
+</body>
+</html>
