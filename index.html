@@ -347,17 +347,47 @@ tabHost.addEventListener('click',e=>{
 newTabButton.addEventListener('click',()=>makeSession('cmd'));
 document.querySelector('.psnew').addEventListener('click',()=>makeSession('ps'));
 function runPowerShell(raw){
- raw=raw.trim();if(!raw)return;const s=sessions.get(activeSessionId);write('PS '+(s.path==='\\'?'C:\\': 'C:'+s.path)+'> '+raw,'command');
+ raw=raw.trim(); if(!raw)return;
+ const s=sessions.get(activeSessionId);
+ write('PS C:'+currentPath+'> '+raw,'command');
  const low=raw.toLowerCase();
- if(/^\$[a-z_][\w]*\s*=/.test(raw)){const m=raw.match(/^\$([a-z_][\w]*)\s*=\s*(.*)$/i);let v=m[2].trim();if((v.startsWith('\"')&&v.endsWith('\"'))||(v.startsWith("'")&&v.endsWith("'")))v=v.slice(1,-1);s.vars[m[1].toLowerCase()]=v;return;}
+ let m;
+ if((m=raw.match(/^\$([a-z_][\w]*)\s*=\s*(.*)$/i))){
+   let v=m[2].trim();
+   if((v.startsWith('"')&&v.endsWith('"'))||(v.startsWith("'")&&v.endsWith("'")))v=v.slice(1,-1);
+   s.vars[m[1].toLowerCase()]=v; return;
+ }
  if(/^clear-host$|^cls$/.test(low)){clearOutput();return;}
  if(/^get-location$|^pwd$/.test(low)){write('Path');write('----');write('C:'+currentPath);return;}
- if(/^get-childitem$|^gci$|^ls$|^dir$/.test(low)){const entries=listDir(currentPath);if(!entries.length){write('');return;}write('    Directory: C:'+currentPath);write('');write('Mode                 LastWriteTime         Length Name');write('----                 -------------         ------ ----');for(const p of entries){const n=fs[p];write((n.type==='dir'?'d----':'-a---').padEnd(21)+' '+n.modified.padEnd(21)+' '+(n.type==='dir'?'':String(n.content.length).padStart(6))+' '+base(p));}return;}
+ if(/^get-childitem$|^gci$|^ls$|^dir$/.test(low)){
+   const entries=listDir(currentPath);write('    Directory: C:'+currentPath);write('');
+   for(const p of entries){const n=fs[p];write((n.type==='dir'?'d----':'-a---')+'  '+(n.type==='dir'?'':String(n.content.length).padStart(6)+'  ')+base(p));}return;
+ }
  if(/^get-date$/.test(low)){write(new Date().toString());return;}
- if(/^get-command$/.test(low)||/^get-help$/.test(low)||/^help$/.test(low)){write('지원 명령: Get-Location, Get-ChildItem, Set-Location, Get-Date, Get-Command, Get-Help, Write-Output, Clear-Host, New-Item, Remove-Item, $변수');return;}
- if(/^set-location\s+/.test(raw)||/^cd\s+/.test(low)){const arg=raw.replace(/^(set-location|cd)\s+/i,'').trim().replace(/^['\"]|['\"]$/g,'');const p=resolveExisting(arg);if(!p||fs[p].type!=='dir'){err('Set-Location: 경로를 찾을 수 없습니다: '+arg);return;}currentPath=p;return;}
- if(/^write-output\s+/.test(raw)||/^echo\s+/.test(raw)||/^write-host\s+/.test(raw)){let value=raw.replace(/^(write-output|write-host|echo)\s+/i,'').trim();value=value.replace(/\$([a-z_][\w]*)/gi,(_,n)=>s.vars[n.toLowerCase()]??('
-
+ if(/^get-command$|^get-help$|^help$/.test(low)){write('지원 명령: Get-Location, Get-ChildItem, Set-Location, Get-Date, Get-Command, Get-Help, Write-Output, Clear-Host, New-Item, Remove-Item, 변수');return;}
+ if((m=raw.match(/^(?:set-location|cd)\s+(.+)$/i))){
+   const arg=m[1].trim().replace(/^["']|["']$/g,'');const p=resolveExisting(arg);
+   if(!p||fs[p].type!=='dir'){err('Set-Location: 경로를 찾을 수 없습니다: '+arg);return;}currentPath=p;return;
+ }
+ if((m=raw.match(/^(?:write-output|write-host|echo)\s+(.+)$/i))){
+   let value=m[1].trim().replace(/\$([a-z_][\w]*)/gi,(_,n)=>s.vars[n.toLowerCase()]??('$'+n));
+   if((value.startsWith('"')&&value.endsWith('"'))||(value.startsWith("'")&&value.endsWith("'")))value=value.slice(1,-1);
+   write(value);return;
+ }
+ if((m=raw.match(/^new-item\s+(.+)$/i))){
+   let arg=m[1].replace(/^-path\s+/i,'').replace(/^["']|["']$/g,'').trim();
+   if(!arg){err('New-Item: 경로를 입력하세요.');return;}
+   const p=norm(arg);const e=addNode(p,makeNode('dir'));if(e)err(e);else success('폴더를 만들었습니다: C:'+p);return;
+ }
+ if((m=raw.match(/^remove-item\s+(.+)$/i))){
+   const p=resolveExisting(m[1].trim().replace(/^["']|["']$/g,''));
+   if(!p||p==='\\'){err('Remove-Item: 항목을 찾을 수 없습니다.');return;}
+   removeTree(p);saveFS();success('항목을 제거했습니다: C:'+p);return;
+ }
+ if(/^\$[a-z_][\w]*$/i.test(raw)){write(s.vars[raw.slice(1).toLowerCase()]??'');return;}
+ if(/^exit$/i.test(raw)){write('탭의 × 버튼으로 이 가상 세션을 닫을 수 있습니다.','dim');return;}
+ err('가상 PowerShell: 지원하지 않는 명령입니다. Get-Command 로 명령 목록을 확인하세요.');
+}
 $('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';if(sessions.get(activeSessionId)?.shell==='ps')runPowerShell(v);else run(v);setPrompt();saveActiveSession();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
 $('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
 $$('[data-cmd]').forEach(b=>b.onclick=()=>{showView('terminal');run(b.dataset.cmd);$('#cmdInput').focus();});
