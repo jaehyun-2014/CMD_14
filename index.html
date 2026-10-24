@@ -84,7 +84,7 @@ html,body{background:#191919}
 .windowbar{height:42px;flex:0 0 42px;display:flex;align-items:stretch;background:#202020;border-bottom:1px solid #383838;color:#eee}
 .windowtabs{display:flex;align-items:stretch;gap:2px;padding:5px 6px 0;min-width:0;flex:1}
 .windowtab{display:flex;align-items:center;gap:9px;min-width:180px;max-width:260px;padding:0 13px;background:#242424;border:1px solid #383838;color:#ccc;font-size:12px;cursor:pointer;text-align:left}
-.windowtab .tabglyph{font:700 12px var(--mono);color:#fff;border:1px solid #777;padding:2px 4px}
+.windowtab .tabglyph{font:700 12px var(--mono);color:#fff;border:1px solid #777;padding:2px 4px}.windowtab .tabglyph.ps-glyph{font:700 14px Arial,sans-serif;color:#5aa6ff;border:0;padding:0 2px;text-shadow:0 0 1px #5aa6ff}
 .windowtab .tablabel{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .windowtab.active{background:#191919;border-bottom:2px solid #eee;color:#fff}.windowtab .tabclose{margin-left:auto;color:#aaa;font-size:16px}.windowtab .tabclose:hover{color:#fff}
 .windownew{align-self:center;width:30px;height:29px;padding:0;border:1px solid transparent;background:transparent;font-size:19px}
@@ -324,7 +324,7 @@ function makeSession(shell='cmd'){
  const id=nextSessionId++;
  sessions.set(id,{output:'',input:'',path:'\\Users\\User',lines:0,shell,vars:{}});
  const tab=document.createElement('button');tab.type='button';tab.className='windowtab';tab.dataset.session=String(id);
- const glyph=document.createElement('span');glyph.className='tabglyph';glyph.textContent=shell==='ps'?'PS':'>'+'_';
+ const glyph=document.createElement('span');glyph.className='tabglyph';glyph.textContent=shell==='ps'?'❯':'>'+'_';if(shell==='ps')glyph.classList.add('ps-glyph');
  const label=document.createElement('span');label.className='tablabel';label.textContent=shell==='ps'?'PowerShell '+id:'명령 프롬프트 '+id;
  const close=document.createElement('span');close.className='tabclose';close.textContent='×';close.title='탭 닫기';
  tab.append(glyph,label,close);tabHost.insertBefore(tab,newTabButton);
