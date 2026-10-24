@@ -316,7 +316,7 @@ function activateSession(id){
  saveActiveSession(); activeSessionId=id;
  const s=sessions.get(id); currentPath=s.path; outputLines=s.lines;
  $('#output').innerHTML=s.output; $('#cmdInput').value=s.input;
- $('.windowtab[data-session]').forEach(t=>t.classList.toggle('active',Number(t.dataset.session)===id));
+ $$('.windowtab[data-session]').forEach(t=>t.classList.toggle('active',Number(t.dataset.session)===id));
  $('#cmdInput').focus();
 }
 function makeSession(shell='cmd'){
@@ -339,7 +339,7 @@ tabHost.addEventListener('click',e=>{
  if(e.target.closest('.tabclose')){
    if(sessions.size===1){toast('마지막 CMD 탭은 닫을 수 없습니다.');return;}
    sessions.delete(id);tab.remove();
-   if(activeSessionId===id){const next=[...sessions.keys()][0];activeSessionId=next;const s=sessions.get(next);$('#output').innerHTML=s.output;$('#cmdInput').value=s.input;currentPath=s.path;outputLines=s.lines;$('.windowtab[data-session]').forEach(t=>t.classList.toggle('active',Number(t.dataset.session)===next));}
+   if(activeSessionId===id){const next=[...sessions.keys()][0];activeSessionId=next;const s=sessions.get(next);$('#output').innerHTML=s.output;$('#cmdInput').value=s.input;currentPath=s.path;outputLines=s.lines;$$('.windowtab[data-session]').forEach(t=>t.classList.toggle('active',Number(t.dataset.session)===next));}
    return;
  }
  activateSession(id);
