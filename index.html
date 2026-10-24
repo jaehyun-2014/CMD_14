@@ -223,6 +223,7 @@ function executeSingle(raw){
  let a;try{a=parseArgs(argstr);}catch(e){err(e.message);return;}
  const usage=(s)=>err('사용법: '+s);
  switch(cmd){
+ case 'sui':write('');success('S U I I I I I I I I I I I !!!');write('      >_  CMD_14 — SUI MODE');write('');break;
  case 'help':case '/?':
   write('CMD_14 Web [Version 14.0.1]','good');write('이 환경은 웹 브라우저 안에서 동작하는 가상 명령 프롬프트입니다.');write('');
   write('파일 및 폴더');write('  dir, cd, tree, type, copy, move, ren, del, mkdir, rmdir, find, where');write('시스템 명령');write('  ver, systeminfo, hostname, whoami, date, time, vol, explorer');write('셸 및 화면');write('  cls, echo, title, color, prompt, history, doskey, set, exit');write('추가');write('  notepad [파일], calc, ipconfig, ping, path, pushd, popd, about');write('');write('명령어는 대소문자를 구분하지 않습니다. 경로에 공백이 있으면 "큰따옴표"로 감싸세요.');write('여러 명령은 & 또는 && 로 연결할 수 있습니다.');break;
