@@ -34,6 +34,50 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{
 .modal{border-radius:2px;box-shadow:0 4px 12px #0006}
 .field input,.field textarea,.pathbox{border-radius:2px}
 .toast{border-radius:2px;box-shadow:none}
+
+/* Focused Windows-style terminal polish: preserve the existing dark palette and behavior. */
+:root{--bg:#191919;--panel:#202020;--panel2:#292929;--line:#3a3a3a;--text:#f2f2f2;--muted:#b6b6b6;--accent:#f2f2f2}
+html,body{background:#191919}
+.app{min-height:100%;background:#191919}
+.layout{grid-template-columns:176px minmax(0,1fr)}
+.sidebar{background:#1b1b1b;border-right:1px solid #393939;padding:12px 9px;gap:4px}
+.navlabel{letter-spacing:.6px}
+.navbtn{min-height:38px;padding:9px 10px;color:#ddd;border:1px solid transparent;border-radius:4px}
+.navbtn span:first-child{color:#eee}
+.navbtn:hover{background:#292929;border-color:#555}
+.navbtn.active{background:#303030;border-color:#666;color:#fff}
+.main{padding:10px;gap:8px}
+#view-terminal{gap:8px!important}
+.terminal{min-height:300px;border:1px solid #555;border-radius:4px;background:#0c0c0c}
+.termhead{height:36px;flex:0 0 36px;background:#242424;border-bottom:1px solid #454545;padding:0 10px;gap:9px}
+.termglyph{display:inline-grid;place-items:center;width:23px;height:23px;border:1px solid #888;border-radius:2px;color:#fff;font:700 12px var(--mono)}
+.termname{font-size:12px;color:#f2f2f2;letter-spacing:.2px}
+.termstate{font:10px var(--mono);color:#aaa;letter-spacing:.5px}
+.termhead button{margin-left:auto;padding:4px 8px;border:1px solid #777;background:#303030;border-radius:3px;color:#eee}
+.termhead button:hover{background:#3a3a3a;border-color:#ccc}
+.output{padding:14px 15px 8px;font-size:14px;line-height:1.6}
+.inputrow{padding:0 15px 14px}
+.cmdinput{font-size:14px}
+.bottomrow{gap:6px;padding:0 1px}
+.bottomrow button{min-width:54px;padding:6px 10px;background:#292929;border-color:#777;border-radius:3px}
+.bottomrow button:hover{background:#353535;border-color:#d0d0d0}
+.panel,.statcard,.toolcard{background:#222;border-color:#444;border-radius:4px}
+.headrow .pagetitle{font-size:17px;font-weight:600}
+.subtitle{color:#aaa}
+.pill{background:#292929;border-color:#666;color:#eee}
+.pathbox,.field input,.field textarea{border-radius:3px}
+.modal{border-radius:4px}
+.toast{border-radius:3px}
+.line.error{color:#ef6b68}.line.warn{color:#ffd166}.line.good{color:#7edc9a}.line.command{color:#f5f5f5}
+@media(max-width:720px){
+ .layout{grid-template-columns:52px minmax(0,1fr)}
+ .main{padding:7px}
+ .termstate{display:none}
+ .termhead{padding:0 7px}
+ .output{padding:10px;font-size:12px}
+ .inputrow{padding:0 10px 11px}
+}
+
 </style>
 </head>
 <body>
@@ -47,6 +91,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{
     <main class="main">
       <section id="view-terminal" class="view" style="display:flex;flex-direction:column;flex:1;min-height:0;gap:12px">
         <div class="terminal">
+          <div class="termhead"><span class="termglyph">&gt;_</span><span class="termname">CMD_14</span><span class="termstate">COMMAND PROMPT</span><button id="clearBtn" type="button">화면 지우기</button></div>
           <div id="output" class="output" role="log" aria-live="polite"></div>
           <div class="inputrow"><input id="cmdInput" class="cmdinput" autocomplete="off" spellcheck="false" placeholder="" aria-label="터미널에 명령어 입력"></div>
         </div>
