@@ -78,10 +78,55 @@ html,body{background:#191919}
  .inputrow{padding:0 10px 11px}
 }
 
+
+/* CMD_14 UI refinement: compact Windows Terminal-style title and tab strip */
+.app{background:#191919}
+.windowbar{height:42px;flex:0 0 42px;display:flex;align-items:stretch;background:#202020;border-bottom:1px solid #383838;color:#eee}
+.windowtabs{display:flex;align-items:stretch;gap:2px;padding:5px 6px 0;min-width:0;flex:1}
+.windowtab{display:flex;align-items:center;gap:9px;min-width:180px;max-width:260px;padding:0 13px;background:#191919;border:1px solid #383838;border-bottom-color:#191919;color:#eee;font-size:12px}
+.windowtab .tabglyph{font:700 12px var(--mono);color:#fff;border:1px solid #777;padding:2px 4px}
+.windowtab .tablabel{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.windowtab .tabclose{margin-left:auto;color:#aaa;font-size:16px}
+.windownew{align-self:center;width:30px;height:29px;padding:0;border:1px solid transparent;background:transparent;font-size:19px}
+.windownew:hover{background:#343434;border-color:#555}
+.windowcontrols{display:flex;align-items:center;gap:0;padding:0 8px}
+.windowcontrols span{display:grid;place-items:center;width:28px;height:26px;color:#bbb;font-size:12px}
+.windowcontrols .windowx{font-size:16px}
+.windowcontrols .windowx:hover{background:#c42b1c;color:#fff}
+.layout{min-height:0;flex:1}
+.topbar{display:none}
+.sidebar{padding-top:14px}
+.navlabel{font-size:10px}
+.navbtn{font-size:12px}
+.terminal{border-color:#454545}
+.termhead{height:34px;flex-basis:34px}
+.termhead .dot{display:none}
+.termhead .termstate{margin-left:auto;margin-right:8px}
+.termhead button{margin-left:0}
+.output{scrollbar-color:#555 #0c0c0c;scrollbar-width:thin}
+.output::-webkit-scrollbar{width:10px}
+.output::-webkit-scrollbar-thumb{background:#444;border:2px solid #0c0c0c}
+.output::-webkit-scrollbar-thumb:hover{background:#666}
+.bottomrow button{font:12px var(--mono);min-width:58px}
+@media(max-width:720px){
+ .windowtab{min-width:0;flex:1;padding:0 8px}
+ .windowcontrols{padding:0 3px}
+ .windowcontrols span{width:22px}
+ .windownew{width:25px}
+ .sidebar{padding-top:8px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
+  <div class="windowbar">
+    <div class="windowtabs">
+      <div class="windowtab"><span class="tabglyph">&gt;_</span><span class="tablabel">CMD_14 — 명령 프롬프트</span><span class="tabclose">×</span></div>
+      <button class="windownew" type="button" title="새 탭">+</button>
+    </div>
+    <div class="windowcontrols"><span title="최소화">—</span><span title="최대화">□</span><span class="windowx" title="닫기">×</span></div>
+  </div>
   <div class="layout">
     <aside class="sidebar">
       <button class="navbtn active" data-view="terminal"><span>›_</span><span class="navtext">터미널</span></button>
