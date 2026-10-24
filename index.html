@@ -83,10 +83,10 @@ html,body{background:#191919}
 .app{background:#191919}
 .windowbar{height:42px;flex:0 0 42px;display:flex;align-items:stretch;background:#202020;border-bottom:1px solid #383838;color:#eee}
 .windowtabs{display:flex;align-items:stretch;gap:2px;padding:5px 6px 0;min-width:0;flex:1}
-.windowtab{display:flex;align-items:center;gap:9px;min-width:180px;max-width:260px;padding:0 13px;background:#191919;border:1px solid #383838;border-bottom-color:#191919;color:#eee;font-size:12px}
+.windowtab{display:flex;align-items:center;gap:9px;min-width:180px;max-width:260px;padding:0 13px;background:#242424;border:1px solid #383838;color:#ccc;font-size:12px;cursor:pointer;text-align:left}
 .windowtab .tabglyph{font:700 12px var(--mono);color:#fff;border:1px solid #777;padding:2px 4px}
 .windowtab .tablabel{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.windowtab .tabclose{margin-left:auto;color:#aaa;font-size:16px}
+.windowtab.active{background:#191919;border-bottom:2px solid #eee;color:#fff}.windowtab .tabclose{margin-left:auto;color:#aaa;font-size:16px}.windowtab .tabclose:hover{color:#fff}
 .windownew{align-self:center;width:30px;height:29px;padding:0;border:1px solid transparent;background:transparent;font-size:19px}
 .windownew:hover{background:#343434;border-color:#555}
 .windowcontrols{display:flex;align-items:center;gap:0;padding:0 8px}
@@ -122,10 +122,9 @@ html,body{background:#191919}
 <div class="app">
   <div class="windowbar">
     <div class="windowtabs">
-      <div class="windowtab"><span class="tabglyph">&gt;_</span><span class="tablabel">CMD_14 — 명령 프롬프트</span><span class="tabclose">×</span></div>
+      <button class="windowtab active" type="button" data-session="1"><span class="tabglyph">&gt;_</span><span class="tablabel">명령 프롬프트</span><span class="tabclose">×</span></button>
       <button class="windownew" type="button" title="새 탭">+</button>
     </div>
-    <div class="windowcontrols"><span title="최소화">—</span><span title="최대화">□</span><span class="windowx" title="닫기">×</span></div>
   </div>
   <div class="layout">
     <aside class="sidebar">
@@ -300,6 +299,55 @@ function openCalc(){
  const body=document.createElement('div');const f=field('수식 (숫자와 + - * / % 괄호만 허용)','(12 + 8) * 3');const result=document.createElement('div');result.style.cssText='padding:13px;background:#111111;border:1px solid #505050;border-radius:7px;font:20px var(--mono);color:var(--accent)';result.textContent='결과: —';const calc=document.createElement('button');calc.textContent='계산';calc.onclick=()=>{const s=f.input.value;if(!/^[0-9+\-*/%().\s]+$/.test(s)){result.textContent='허용되지 않는 문자';return;}try{const fn=Function('"use strict";return ('+s+')');const n=fn();result.textContent=Number.isFinite(n)?'결과: '+n:'유효하지 않은 결과';}catch{result.textContent='수식을 확인하세요.';}};body.append(f.wrap,result);const close=document.createElement('button');close.textContent='닫기';close.onclick=()=>host.textContent='';const {host}=modal('계산기',body,[close,calc]);calc.click();}
 function newNameDialog(kind){const f=field(kind==='dir'?'새 폴더 이름':'새 파일 이름',kind==='dir'?'새 폴더':'untitled.txt');const body=document.createElement('div');body.append(f.wrap);const cancel=document.createElement('button');cancel.textContent='취소';cancel.onclick=()=>host.textContent='';const create=document.createElement('button');create.textContent='만들기';create.onclick=()=>{const name=f.input.value.trim();if(!name||/[\\/:*?"<>|]/.test(name)||name==='.'||name==='..'){toast('파일 이름을 확인하세요.');return;}const p=norm(name);const e=addNode(p,kind==='dir'?makeNode('dir'):makeNode('file'));if(e){toast(e);return;}host.textContent='';renderExplorer();toast('생성했습니다.');if(kind==='file')openNotepad(p);};const {host}=modal(kind==='dir'?'새 폴더':'새 파일',body,[cancel,create]);f.input.focus();f.input.select();}
 function autoComplete(){const input=$('#cmdInput'),value=input.value;const m=value.match(/^(.*\s)([^\\/\s]*)$/);if(m){const prefix=m[1],partial=m[2].toLowerCase();const dirToken=prefix.trim().split(/\s+/).pop();let dir=currentPath;if(dirToken&&['cd','dir','type','del','copy','move','ren','mkdir','rmdir'].includes(dirToken.toLowerCase())){}const candidates=listDir(dir).map(p=>base(p)).filter(n=>n.toLowerCase().startsWith(partial));if(candidates.length){input.value=prefix+'"'+candidates[0]+'"';input.setSelectionRange(input.value.length,input.value.length);}}else{const candidates=commandNames.filter(c=>c.startsWith(value.toLowerCase()));if(candidates.length===1)input.value=candidates[0]+' ';else if(candidates.length>1){write(candidates.join('   '),'dim');}}}
+
+/* CMD_14 terminal tabs: each tab keeps its own screen and working directory */
+const tabHost = document.querySelector('.windowtabs');
+const newTabButton = document.querySelector('.windownew');
+let nextSessionId = 2;
+let activeSessionId = 1;
+const sessions = new Map();
+sessions.set(1, { output: '', input: '', path: currentPath, lines: 0 });
+function saveActiveSession(){
+ const s=sessions.get(activeSessionId); if(!s)return;
+ s.output=$('#output').innerHTML; s.input=$('#cmdInput').value; s.path=currentPath; s.lines=outputLines;
+}
+function activateSession(id){
+ if(!sessions.has(id))return;
+ saveActiveSession(); activeSessionId=id;
+ const s=sessions.get(id); currentPath=s.path; outputLines=s.lines;
+ $('#output').innerHTML=s.output; $('#cmdInput').value=s.input;
+ $('.windowtab[data-session]').forEach(t=>t.classList.toggle('active',Number(t.dataset.session)===id));
+ $('#cmdInput').focus();
+}
+function makeSession(){
+ saveActiveSession();
+ const id=nextSessionId++;
+ sessions.set(id,{output:'',input:'',path:'\\Users\\User',lines:0});
+ const tab=document.createElement('button');tab.type='button';tab.className='windowtab';tab.dataset.session=String(id);
+ const glyph=document.createElement('span');glyph.className='tabglyph';glyph.textContent='>_';
+ const label=document.createElement('span');label.className='tablabel';label.textContent='명령 프롬프트 '+id;
+ const close=document.createElement('span');close.className='tabclose';close.textContent='×';close.title='탭 닫기';
+ tab.append(glyph,label,close);tabHost.insertBefore(tab,newTabButton);
+ activateSession(id);
+ $('#output').textContent='';outputLines=0;
+ write('CMD_14 Command Processor [Version 1.0.0]','good');
+ write('(c) CMD_14 Project. All rights reserved.','dim');
+ write('');write('명령어 목록은 help 를 입력하세요.');write('');
+ saveActiveSession();
+}
+tabHost.addEventListener('click',e=>{
+ const tab=e.target.closest('.windowtab[data-session]');if(!tab)return;
+ const id=Number(tab.dataset.session);
+ if(e.target.closest('.tabclose')){
+   if(sessions.size===1){toast('마지막 CMD 탭은 닫을 수 없습니다.');return;}
+   sessions.delete(id);tab.remove();
+   if(activeSessionId===id){const next=[...sessions.keys()][0];activeSessionId=next;const s=sessions.get(next);$('#output').innerHTML=s.output;$('#cmdInput').value=s.input;currentPath=s.path;outputLines=s.lines;$('.windowtab[data-session]').forEach(t=>t.classList.toggle('active',Number(t.dataset.session)===next));}
+   return;
+ }
+ activateSession(id);
+});
+newTabButton.addEventListener('click',makeSession);
+
 $('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';run(v);setPrompt();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
 $('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
 $$('[data-cmd]').forEach(b=>b.onclick=()=>{showView('terminal');run(b.dataset.cmd);$('#cmdInput').focus();});
