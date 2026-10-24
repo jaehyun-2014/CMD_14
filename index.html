@@ -88,7 +88,7 @@ html,body{background:#191919}
 .windowtab .tablabel{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .windowtab.active{background:#191919;border-bottom:2px solid #eee;color:#fff}.windowtab .tabclose{margin-left:auto;color:#aaa;font-size:16px}.windowtab .tabclose:hover{color:#fff}
 .windownew{align-self:center;width:30px;height:29px;padding:0;border:1px solid transparent;background:transparent;font-size:19px}
-.windownew:hover{background:#343434;border-color:#555}
+.windownew:hover{background:#343434;border-color:#555}.windownew.psnew{font:11px var(--mono);width:34px;color:#d9e8ff}
 .windowcontrols{display:flex;align-items:center;gap:0;padding:0 8px}
 .windowcontrols span{display:grid;place-items:center;width:28px;height:26px;color:#bbb;font-size:12px}
 .windowcontrols .windowx{font-size:16px}
@@ -123,7 +123,7 @@ html,body{background:#191919}
   <div class="windowbar">
     <div class="windowtabs">
       <button class="windowtab active" type="button" data-session="1"><span class="tabglyph">&gt;_</span><span class="tablabel">명령 프롬프트</span><span class="tabclose">×</span></button>
-      <button class="windownew" type="button" title="새 탭">+</button>
+      <button class="windownew" type="button" title="새 CMD 탭">+</button><button class="windownew psnew" type="button" title="새 PowerShell 탭">PS</button>
     </div>
   </div>
   <div class="layout">
@@ -306,7 +306,7 @@ const newTabButton = document.querySelector('.windownew');
 let nextSessionId = 2;
 let activeSessionId = 1;
 const sessions = new Map();
-sessions.set(1, { output: '', input: '', path: currentPath, lines: 0 });
+sessions.set(1, { output: '', input: '', path: currentPath, lines: 0, shell: 'cmd', vars: {} });
 function saveActiveSession(){
  const s=sessions.get(activeSessionId); if(!s)return;
  s.output=$('#output').innerHTML; s.input=$('#cmdInput').value; s.path=currentPath; s.lines=outputLines;
@@ -319,20 +319,18 @@ function activateSession(id){
  $('.windowtab[data-session]').forEach(t=>t.classList.toggle('active',Number(t.dataset.session)===id));
  $('#cmdInput').focus();
 }
-function makeSession(){
+function makeSession(shell='cmd'){
  saveActiveSession();
  const id=nextSessionId++;
- sessions.set(id,{output:'',input:'',path:'\\Users\\User',lines:0});
+ sessions.set(id,{output:'',input:'',path:'\\Users\\User',lines:0,shell,vars:{}});
  const tab=document.createElement('button');tab.type='button';tab.className='windowtab';tab.dataset.session=String(id);
- const glyph=document.createElement('span');glyph.className='tabglyph';glyph.textContent='>_';
- const label=document.createElement('span');label.className='tablabel';label.textContent='명령 프롬프트 '+id;
+ const glyph=document.createElement('span');glyph.className='tabglyph';glyph.textContent=shell==='ps'?'PS':'>'+'_';
+ const label=document.createElement('span');label.className='tablabel';label.textContent=shell==='ps'?'PowerShell '+id:'명령 프롬프트 '+id;
  const close=document.createElement('span');close.className='tabclose';close.textContent='×';close.title='탭 닫기';
  tab.append(glyph,label,close);tabHost.insertBefore(tab,newTabButton);
  activateSession(id);
  $('#output').textContent='';outputLines=0;
- write('CMD_14 Command Processor [Version 1.0.0]','good');
- write('(c) CMD_14 Project. All rights reserved.','dim');
- write('');write('명령어 목록은 help 를 입력하세요.');write('');
+ if(shell==='ps'){write('PowerShell 7.x — CMD_14 가상 셸','good');write('Copyright (C) CMD_14 Project. All rights reserved.','dim');write('가상 PowerShell입니다. 실제 Windows 명령은 실행하지 않습니다.','dim');write('');write('Get-Command 를 입력하면 지원 명령을 볼 수 있습니다.');write('');}else{write('CMD_14 Command Processor [Version 1.0.0]','good');write('(c) CMD_14 Project. All rights reserved.','dim');write('');write('명령어 목록은 help 를 입력하세요.');write('');}
  saveActiveSession();
 }
 tabHost.addEventListener('click',e=>{
@@ -346,7 +344,55 @@ tabHost.addEventListener('click',e=>{
  }
  activateSession(id);
 });
-newTabButton.addEventListener('click',makeSession);
+newTabButton.addEventListener('click',()=>makeSession('cmd'));
+document.querySelector('.psnew').addEventListener('click',()=>makeSession('ps'));
+function runPowerShell(raw){
+ raw=raw.trim();if(!raw)return;const s=sessions.get(activeSessionId);write('PS '+(s.path==='\\'?'C:\\': 'C:'+s.path)+'> '+raw,'command');
+ const low=raw.toLowerCase();
+ if(/^\$[a-z_][\w]*\s*=/.test(raw)){const m=raw.match(/^\$([a-z_][\w]*)\s*=\s*(.*)$/i);let v=m[2].trim();if((v.startsWith('\"')&&v.endsWith('\"'))||(v.startsWith("'")&&v.endsWith("'")))v=v.slice(1,-1);s.vars[m[1].toLowerCase()]=v;return;}
+ if(/^clear-host$|^cls$/.test(low)){clearOutput();return;}
+ if(/^get-location$|^pwd$/.test(low)){write('Path');write('----');write('C:'+currentPath);return;}
+ if(/^get-childitem$|^gci$|^ls$|^dir$/.test(low)){const entries=listDir(currentPath);if(!entries.length){write('');return;}write('    Directory: C:'+currentPath);write('');write('Mode                 LastWriteTime         Length Name');write('----                 -------------         ------ ----');for(const p of entries){const n=fs[p];write((n.type==='dir'?'d----':'-a---').padEnd(21)+' '+n.modified.padEnd(21)+' '+(n.type==='dir'?'':String(n.content.length).padStart(6))+' '+base(p));}return;}
+ if(/^get-date$/.test(low)){write(new Date().toString());return;}
+ if(/^get-command$/.test(low)||/^get-help$/.test(low)||/^help$/.test(low)){write('지원 명령: Get-Location, Get-ChildItem, Set-Location, Get-Date, Get-Command, Get-Help, Write-Output, Clear-Host, New-Item, Remove-Item, $변수');return;}
+ if(/^set-location\s+/.test(raw)||/^cd\s+/.test(low)){const arg=raw.replace(/^(set-location|cd)\s+/i,'').trim().replace(/^['\"]|['\"]$/g,'');const p=resolveExisting(arg);if(!p||fs[p].type!=='dir'){err('Set-Location: 경로를 찾을 수 없습니다: '+arg);return;}currentPath=p;return;}
+ if(/^write-output\s+/.test(raw)||/^echo\s+/.test(raw)||/^write-host\s+/.test(raw)){let value=raw.replace(/^(write-output|write-host|echo)\s+/i,'').trim();value=value.replace(/\$([a-z_][\w]*)/gi,(_,n)=>s.vars[n.toLowerCase()]??('
+
+$('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';if(sessions.get(activeSessionId)?.shell==='ps')runPowerShell(v);else run(v);setPrompt();saveActiveSession();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
+$('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
+$$('[data-cmd]').forEach(b=>b.onclick=()=>{showView('terminal');run(b.dataset.cmd);$('#cmdInput').focus();});
+$$('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+$('#newFolder').onclick=()=>newNameDialog('dir');$('#newFile').onclick=()=>newNameDialog('file');$('#refreshFiles').onclick=renderExplorer;
+$('#upDir').onclick=()=>{currentPath=parent(currentPath)||'\\';setPrompt();renderExplorer();};
+
+$('#clearHistory').onclick=()=>{if(confirm('명령 기록을 지울까요?')){history=[];histIndex=0;saveHistory();renderHistory();toast('명령 기록을 지웠습니다.');}};
+setPrompt();write('CMD_14 Command Processor [Version 1.0.0]','good');write('(c) CMD_14 Project. All rights reserved.','dim');write('');write('명령어 목록은 help 를 입력하세요.');write('');renderExplorer();renderHistory();
+})();
+</script>
+</body>
+</html>
++n));if((value.startsWith('\"')&&value.endsWith('\"'))||(value.startsWith("'")&&value.endsWith("'")))value=value.slice(1,-1);write(value);return;}
+ if(/^new-item\s+/.test(raw)||/^mkdir\s+/.test(low)){const m=raw.match(/(?:-path\s+)?(?:-itemtype\s+\w+\s+)?(.+)$/i);const arg=(m?.[1]||'').trim().replace(/^['\"]|['\"]$/g,'');if(!arg){err('New-Item: 경로를 입력하세요.');return;}const p=norm(arg);const e=addNode(p,makeNode('dir'));if(e)err(e);else write('    Directory: C:'+parent(p)+'\n\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----\nd----          '+stamp()+'             '+base(p),'good');return;}
+ if(/^remove-item\s+/.test(raw)){const arg=raw.replace(/^remove-item\s+/i,'').trim().replace(/^['\"]|['\"]$/g,'');const p=resolveExisting(arg);if(!p||p==='\\'){err('Remove-Item: 항목을 찾을 수 없습니다.');return;}removeTree(p);saveFS();write('항목을 제거했습니다: '+('C:'+p),'good');return;}
+ if(raw.startsWith('
+
+$('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';run(v);setPrompt();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
+$('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
+$$('[data-cmd]').forEach(b=>b.onclick=()=>{showView('terminal');run(b.dataset.cmd);$('#cmdInput').focus();});
+$$('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+$('#newFolder').onclick=()=>newNameDialog('dir');$('#newFile').onclick=()=>newNameDialog('file');$('#refreshFiles').onclick=renderExplorer;
+$('#upDir').onclick=()=>{currentPath=parent(currentPath)||'\\';setPrompt();renderExplorer();};
+
+$('#clearHistory').onclick=()=>{if(confirm('명령 기록을 지울까요?')){history=[];histIndex=0;saveHistory();renderHistory();toast('명령 기록을 지웠습니다.');}};
+setPrompt();write('CMD_14 Command Processor [Version 1.0.0]','good');write('(c) CMD_14 Project. All rights reserved.','dim');write('');write('명령어 목록은 help 를 입력하세요.');write('');renderExplorer();renderHistory();
+})();
+</script>
+</body>
+</html>
+)&&/^\$[a-z_][\w]*$/i.test(raw)){const name=raw.slice(1).toLowerCase();write(s.vars[name]??'');return;}
+ if(/^exit$/i.test(raw)){write('PowerShell 탭은 상단 × 버튼으로 닫을 수 있습니다.','dim');return;}
+ err('가상 PowerShell: 지원하지 않는 명령입니다. Get-Command 로 명령 목록을 확인하세요.');
+}
 
 $('#cmdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.currentTarget.value;e.currentTarget.value='';run(v);setPrompt();}else if(e.key==='ArrowUp'){e.preventDefault();if(history.length){histIndex=Math.max(0,histIndex-1);e.currentTarget.value=history[histIndex]||'';}}else if(e.key==='ArrowDown'){e.preventDefault();histIndex=Math.min(history.length,histIndex+1);e.currentTarget.value=history[histIndex]||'';}else if(e.key==='Tab'){e.preventDefault();autoComplete();}});
 $('#clearBtn').onclick=clearOutput;const quickHelp=$('#quickHelp');if(quickHelp)quickHelp.onclick=()=>{showView('terminal');run('help');};
